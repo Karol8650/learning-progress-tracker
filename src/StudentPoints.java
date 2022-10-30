@@ -1,38 +1,58 @@
 public class StudentPoints {
-    private int Java;
-    private int DSA;
-    private int Databases;
-    private int Spring;
+    private int totalPoints;
+    private int JavaPoints;
+    private int DSAPoints;
+    private int DatabasesPoints;
+    private int SpringPoints;
+
+    public int getJavaPoints() {
+        return JavaPoints;
+    }
+
+    public int getDSAPoints() {
+        return DSAPoints;
+    }
+
+    public int getDatabasesPoints() {
+        return DatabasesPoints;
+    }
+
+    public int getSpringPoints() {
+        return SpringPoints;
+    }
 
     void addJavaPoints(int points) {
-        Java += points;
+        JavaPoints += points;
+        totalPoints += points;
     }
 
     void addDSAPoints(int points) {
-        DSA += points;
+        DSAPoints += points;
+        totalPoints += points;
     }
 
     void addDatabasesPoints(int points) {
-        Databases += points;
+        DatabasesPoints += points;
+        totalPoints += points;
     }
 
     void addSpringPoints(int points) {
-        Spring += points;
+        SpringPoints += points;
+        totalPoints += points;
     }
 
-    int getJavaPoints() {
-        return Java;
+    int getPointsByCourse(String name) {
+        name = name.toLowerCase();
+        switch (name) {
+            case "java" -> { return JavaPoints; }
+            case "dsa" -> { return DSAPoints; }
+            case "databases" -> { return DatabasesPoints; }
+            case "spring" -> { return SpringPoints; }
+        }
+        return 0;
     }
 
-    int getDSAPoints() {
-        return DSA;
-    }
-
-    int getDatabasesPoints() {
-        return Databases;
-    }
-
-    int getSpringPoints() {
-        return Spring;
+    int getTotalPoints() {
+        return totalPoints;
     }
 }

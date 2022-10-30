@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 class Student {
     private final StudentPoints studentPoints = new StudentPoints();
     private final StudentCredentials studentCredentials;
@@ -13,17 +15,42 @@ class Student {
 
         int index = 0;
         int id = Integer.parseInt(parts[index++]);
-        Student student = StudentDatabase.getStudent((id));
+        Student student = Database.getStudent((id));
 
-        student.getStudentPoints().addJavaPoints(Integer.parseInt(parts[index++]));
-        student.getStudentPoints().addDSAPoints(Integer.parseInt(parts[index++]));
-        student.getStudentPoints().addDatabasesPoints(Integer.parseInt(parts[index++]));
-        student.getStudentPoints().addSpringPoints(Integer.parseInt(parts[index]));
+        StudentPoints studentPoints = student.getStudentPoints();
+
+        int javaPoints = Integer.parseInt(parts[index++]);
+        if (studentPoints.getJavaPoints() == 0 && javaPoints > 0) {
+            Course course = Database.getCourse("Java");
+            Objects.requireNonNull(course).enrollStudent(student);
+        }
+        studentPoints.addJavaPoints(javaPoints);
+
+        int dsaPoints = Integer.parseInt(parts[index++]);
+        if (studentPoints.getDSAPoints() == 0 && dsaPoints > 0) {
+            Course course = Database.getCourse("DSA");
+            Objects.requireNonNull(course).enrollStudent(student);
+        }
+        studentPoints.addDSAPoints(dsaPoints);
+
+        int databasesPoints = Integer.parseInt(parts[index++]);
+        if (studentPoints.getDatabasesPoints() == 0 && databasesPoints > 0) {
+            Course course = Database.getCourse("Databases");
+            Objects.requireNonNull(course).enrollStudent(student);
+        }
+        studentPoints.addDatabasesPoints(databasesPoints);
+
+        int springPoints = Integer.parseInt(parts[index]);
+        if (studentPoints.getSpringPoints() == 0 && springPoints > 0) {
+            Course course = Database.getCourse("Spring");
+            Objects.requireNonNull(course).enrollStudent(student);
+        }
+        studentPoints.addSpringPoints(springPoints);
     }
 
     public static void displayPoints(String id) {
         int parsedID = Integer.parseInt(id);
-        StudentPoints studentPoints = StudentDatabase.getStudent((parsedID)).getStudentPoints();
+        StudentPoints studentPoints = Database.getStudent((parsedID)).getStudentPoints();
 
         int Java = studentPoints.getJavaPoints();
         int DSA = studentPoints.getDSAPoints();

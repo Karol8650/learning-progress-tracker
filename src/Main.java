@@ -13,7 +13,21 @@ public class Main {
             switch (input) {
                 case "" -> System.out.println("no input");
                 case "back" -> System.out.println("Enter 'exit' to exit the program.");
-                case "list" -> StudentDatabase.listStudents();
+                case "list" -> Database.listStudents();
+                case "statistics" -> {
+                    System.out.println("Type the name of a course to see details or 'back' to quit:");
+                    Course.displayCoursesStatistics();
+                    input = scanner.nextLine().trim();
+                    while (!Objects.equals(input, "back")) {
+
+                        if (DataVerification.checkCourseName(input)) {
+                            CoursesStatistics.displayCourseStatistics(input);
+                        }
+
+                        input = scanner.nextLine().trim();
+                    }
+
+                }
                 case "add students" -> {
                     System.out.println("Enter student credentials or 'back' to return:");
                     input = scanner.nextLine().trim();
@@ -21,13 +35,13 @@ public class Main {
 
                         if (DataVerification.checkCredentials(input)) {
                             Student student = new Student(input);
-                            StudentDatabase.addStudent(student);
+                            Database.addStudent(student);
                             System.out.println("The student has been added.");
                         }
 
                         input = scanner.nextLine().trim();
                     }
-                    int totalStudents = StudentDatabase.numOfStudents();
+                    int totalStudents = Database.numOfStudents();
                     System.out.println("Total " + totalStudents + " students have been added.");
                 }
                 case "add points" -> {

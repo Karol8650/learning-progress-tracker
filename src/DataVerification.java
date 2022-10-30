@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class DataVerification {
@@ -36,7 +38,7 @@ public class DataVerification {
     }
 
     static private boolean verifyEmail(String email) {
-        if (StudentDatabase.containsEmail(email)) {
+        if (Database.containsEmail(email)) {
             System.out.println("This email is already taken.");
             return false;
         }
@@ -109,5 +111,11 @@ public class DataVerification {
         }
 
         return true;
+    }
+
+    static boolean checkCourseName(String course) {
+        course = course.toLowerCase();
+        Set<String> courses = Set.of("java", "dsa", "databases", "spring");
+        return (courses.contains(course));
     }
 }
