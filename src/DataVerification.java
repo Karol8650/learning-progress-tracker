@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -67,7 +66,7 @@ public class DataVerification {
     static boolean checkID(String id) {
         try {
             int parsedID = Integer.parseInt(id);
-            if (!(parsedID >= StudentID.getStartingID() && parsedID <= StudentID.getActualID())) {
+            if (!(parsedID >= StudentID.getStartingID() && parsedID < StudentID.getActualID())) {
                 System.out.println("No student is found for id=" + id + ".");
                 return false;
             }

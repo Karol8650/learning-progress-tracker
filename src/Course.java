@@ -2,9 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract class Course {
-    static protected CoursesStatistics courseStatistics = new CoursesStatistics();
+
     protected final int maxPoints;
     protected final List<Student> enrolledStudents;
+    protected int completedTasks;
     protected final String name;
 
     Course(String name, int maxPoints) {
@@ -17,23 +18,44 @@ abstract class Course {
         enrolledStudents.add(student);
     }
 
-    static public void displayCoursesStatistics() {
-        courseStatistics.displayCoursesStatistics();
+    void addCompletedTask() {
+        completedTasks++;
     }
-    public String getName() {
+
+    String getName() {
         return name;
     }
 
-    public int getMaxPoints() {
+    int getMaxPoints() {
         return maxPoints;
     }
 
-    public CoursesStatistics getCourseStatistics() {
-        return courseStatistics;
+    List<Student> getEnrolledStudents() {
+        return enrolledStudents;
     }
 
-    public List<Student> getEnrolledStudents() {
-        return enrolledStudents;
+    public double getTotalEnrolledStudents() {
+        return enrolledStudents.size();
+    }
+
+    public double getCompletedTasks() {
+        return completedTasks;
+    }
+
+    public double getAverageGradePerAssignment() {
+        int totalCoursePoints = getTotalCoursePoints();
+        if (completedTasks > 0) {
+            return (double) totalCoursePoints / (double) completedTasks;
+        }
+        return 0;
+    }
+
+    public int getTotalCoursePoints() {
+        int totalCoursePoints = 0;
+        for (Student student : enrolledStudents) {
+            totalCoursePoints += student.getStudentPoints().getPointsByCourse(name);
+        }
+        return totalCoursePoints;
     }
 
 }

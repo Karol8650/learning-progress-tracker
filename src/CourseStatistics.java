@@ -2,70 +2,67 @@ import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.IntSupplier;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class CoursesStatistics {
 
-    private int totalEnrolledStudents;
-    private int completedTasks;
-    private int averageGradePerAssignment;
+    static private boolean isAnyEnrolledStudent = false;
+    static private boolean isAnyCompletedTask = false;
 
-    private final List<Course> courses = Database.getCourses();
 
-    private String getBestResult(IntSupplier supplier) {
+    static private final List<Course> courses = Database.getCourses();
 
-        int max = courses.stream().mapToInt(a -> supplier.getAsInt()).min().orElse(0);
+    static private String getBestResult(Function<Course, Double> function) {
 
-        return courses.stream().mapToInt(a -> supplier.getAsInt()).filter(a -> a == max)
-                .mapToObj(String::valueOf).collect(Collectors.joining(", "));
+        double max = courses.stream().mapToDouble(function::apply).max().orElse(0);
+
+        return courses.stream().filter(a -> function.apply(a) == max)
+                .map(Course::getName).collect(Collectors.joining(", "));
     }
 
-    private String getWorstResult(IntSupplier supplier) {
+    static private String getWorstResult(Function<Course, Double> function) {
 
-        int min = courses.stream().mapToInt(a -> supplier.getAsInt()).min().orElse(0);
+        double min = courses.stream().mapToDouble(function::apply).min().orElse(0);
 
-        return courses.stream().mapToInt(a -> supplier.getAsInt()).filter(a -> a == min)
-                .mapToObj(String::valueOf).collect(Collectors.joining(", "));
+        return courses.stream().filter(a -> function.apply(a) == min)
+                .map(Course::getName).collect(Collectors.joining(", "));
     }
 
-    private boolean checkAllCoursesTheSameResult(String result) {
+    static private boolean checkAllCoursesTheSameResult(String result) {
         return result.split(", ").length == courses.size();
     }
 
-    private String getMostPopularCourse() {
-        String result = getBestResult(this::getTotalEnrolledStudents);
-        return totalEnrolledStudents > 0 && !checkAllCoursesTheSameResult(result) ? result : "n/a";
+    static private String getMostPopularCourse() {
+        String result = getBestResult(Course::getTotalEnrolledStudents);
+        return isAnyEnrolledStudent ? result : "n/a";
     }
 
-    private String getLeastPopularCourse() {
-        String result = getWorstResult(this::getTotalEnrolledStudents);
-        return totalEnrolledStudents > 0 && !checkAllCoursesTheSameResult(result) ? result : "n/a";
+    static private String getLeastPopularCourse() {
+        String result = getWorstResult(Course::getTotalEnrolledStudents);
+        return isAnyEnrolledStudent && !checkAllCoursesTheSameResult(result) ? result : "n/a";
     }
 
-    private String getHighestActivityCourse() {
-        String result = getBestResult(this::getCompletedTasks);
-        return completedTasks > 0 && !checkAllCoursesTheSameResult(result) ? result : "n/a";
+    static private String getHighestActivityCourse() {
+        String result = getBestResult(Course::getCompletedTasks);
+        return isAnyCompletedTask ? result : "n/a";
     }
 
-    private String getLowestActivityCourse() {
-        String result = getWorstResult(this::getCompletedTasks);
-        return completedTasks > 0 && !checkAllCoursesTheSameResult(result) ? result : "n/a";
+    static private String getLowestActivityCourse() {
+        String result = getWorstResult(Course::getCompletedTasks);
+        return isAnyCompletedTask && !checkAllCoursesTheSameResult(result) ? result : "n/a";
     }
 
-    private String getEasiestCourse() {
-        String result = getBestResult(this::getAverageGradePerAssignment);
-        return averageGradePerAssignment > 0 && !checkAllCoursesTheSameResult(result) ? result : "n/a";
+    static private String getEasiestCourse() {
+        String result = getBestResult(Course::getAverageGradePerAssignment);
+        return isAnyCompletedTask ? result : "n/a";
     }
 
-    private String getHardestCourse() {
-        String result = getWorstResult(this::getAverageGradePerAssignment);
-        return averageGradePerAssignment > 0 && !checkAllCoursesTheSameResult(result) ? result : "n/a";
+    static private String getHardestCourse() {
+        String result = getWorstResult(Course::getAverageGradePerAssignment);
+        return isAnyCompletedTask && !checkAllCoursesTheSameResult(result) ? result : "n/a";
     }
 
-    void displayCoursesStatistics() {
+    static void displayCoursesStatistics() {
         System.out.println("Most popular: " + getMostPopularCourse());
         System.out.println("Least popular: " + getLeastPopularCourse());
         System.out.println("Highest activity: " + getHighestActivityCourse());
@@ -75,38 +72,48 @@ class CoursesStatistics {
     }
 
     static void displayCourseStatistics(String name) {
-        System.out.printf("%-6s %-9s %-9s\n", "id", "points", "completed");
-
         Course course = Database.getCourse(name);
         List<Student> enrolledStudents = course.getEnrolledStudents();
-        enrolledStudents = sortStudents(enrolledStudents);
+        enrolledStudents = sortStudents(enrolledStudents, name);
 
-        DecimalFormat decFormat = new DecimalFormat("#%");
-        for (Student student: enrolledStudents) {
+        System.out.println(course.getName());
+        System.out.printf("%-6s %-9s %-9s\n", "id", "points", "completed");
+        DecimalFormat decFormat = new DecimalFormat("0.0%");
+        for (Student student : enrolledStudents) {
             int points = student.getStudentPoints().getPointsByCourse(name);
-            System.out.printf("%-6s %-9d %-9.1s\n",
-                    student.getID(), points, decFormat.format(points / course.getMaxPoints()));
+            if (points != 0) {
+                double epsilon = 0.000001d;
+                double completed = ((double) points / (double) course.getMaxPoints());
+                if (Math.abs(completed * 1000 - 0.5 - Math.floor(completed * 1000)) < epsilon) {
+                    System.out.printf("%-6s %-9d %-9s\n",
+                            student.getID(), points, decFormat.format(Math.ceil(completed * 1000) / 1000));
+                } else {
+                    System.out.printf("%-6s %-9d %-9s\n",
+                            student.getID(), points, decFormat.format(completed));
+                }
+            } else {
+                System.out.printf("%-6s %-9d %-9.1s\n", student.getID(), points, decFormat.format(points));
+            }
         }
 
     }
 
-    static List<Student> sortStudents(List<Student> students) {
-        return students.stream().
-                sorted(Comparator.comparing((Student a) -> a.getStudentPoints().getTotalPoints()).reversed().
-                        thenComparing(Student::getID)).
+    static List<Student> sortStudents(List<Student> students, String courseName) {
+        return students.stream()
+                .sorted(Comparator.comparing((Student a) -> {
+                            StudentPoints points = a.getStudentPoints();
+                            return points.getPointsByCourse(courseName);
+                        })
+                        .reversed().thenComparing(Student::getID)).
                 collect(Collectors.toList());
+
     }
 
-
-    public int getTotalEnrolledStudents() {
-        return totalEnrolledStudents;
+    static void setIsAnyEnrolledStudentsTrue() {
+        isAnyEnrolledStudent = true;
     }
 
-    public int getCompletedTasks() {
-        return completedTasks;
-    }
-
-    public int getAverageGradePerAssignment() {
-        return averageGradePerAssignment;
+    static void setIsAnyCompletedTaskTrue() {
+        isAnyCompletedTask = true;
     }
 }

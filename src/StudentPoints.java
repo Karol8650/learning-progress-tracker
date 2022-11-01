@@ -1,58 +1,68 @@
+import java.util.Objects;
+
 public class StudentPoints {
-    private int totalPoints;
     private int JavaPoints;
     private int DSAPoints;
     private int DatabasesPoints;
     private int SpringPoints;
 
-    public int getJavaPoints() {
-        return JavaPoints;
-    }
-
-    public int getDSAPoints() {
-        return DSAPoints;
-    }
-
-    public int getDatabasesPoints() {
-        return DatabasesPoints;
-    }
-
-    public int getSpringPoints() {
-        return SpringPoints;
-    }
-
     void addJavaPoints(int points) {
-        JavaPoints += points;
-        totalPoints += points;
+        int maxPoints = Objects.requireNonNull(Database.getCourse("java")).getMaxPoints();
+        if (JavaPoints + points > maxPoints) {
+            JavaPoints = maxPoints;
+        } else {
+            JavaPoints += points;
+        }
     }
 
     void addDSAPoints(int points) {
-        DSAPoints += points;
-        totalPoints += points;
+        int maxPoints = Objects.requireNonNull(Database.getCourse("dsa")).getMaxPoints();
+        if (DSAPoints + points > maxPoints) {
+            DSAPoints = maxPoints;
+        } else {
+            DSAPoints += points;
+
+        }
     }
 
     void addDatabasesPoints(int points) {
-        DatabasesPoints += points;
-        totalPoints += points;
+        int maxPoints = Objects.requireNonNull(Database.getCourse("databases")).getMaxPoints();
+        if (DatabasesPoints + points > maxPoints) {
+            DatabasesPoints = maxPoints;
+        } else {
+            DatabasesPoints += points;
+
+        }
     }
 
     void addSpringPoints(int points) {
-        SpringPoints += points;
-        totalPoints += points;
+        int maxPoints = Objects.requireNonNull(Database.getCourse("spring")).getMaxPoints();
+        if (SpringPoints + points > maxPoints) {
+            SpringPoints = maxPoints;
+        } else {
+            SpringPoints += points;
+
+        }
     }
 
     int getPointsByCourse(String name) {
         name = name.toLowerCase();
         switch (name) {
-            case "java" -> { return JavaPoints; }
-            case "dsa" -> { return DSAPoints; }
-            case "databases" -> { return DatabasesPoints; }
-            case "spring" -> { return SpringPoints; }
+            case "java" -> {
+                return JavaPoints;
+            }
+            case "dsa" -> {
+                return DSAPoints;
+            }
+            case "databases" -> {
+                return DatabasesPoints;
+            }
+            case "spring" -> {
+                return SpringPoints;
+            }
+            default -> {
+                return 0;
+            }
         }
-        return 0;
-    }
-
-    int getTotalPoints() {
-        return totalPoints;
     }
 }

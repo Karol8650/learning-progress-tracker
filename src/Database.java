@@ -1,10 +1,10 @@
 import java.util.*;
 
 class Database {
-    private static final Map<Integer, Student> students = new HashMap<>();
-    private static final Set<String> emails = new HashSet<>();
-    private static final List<Course> courses = List.of(
+    static private final List<Course> courses = List.of(
             new JavaCourse(), new DSACourse(), new DatabasesCourse(), new SpringCourse()); // immutable list
+    static private final Map<Integer, Student> students = new HashMap<>();
+    static private final Set<String> emails = new HashSet<>();
 
     static void addStudent(Student student) {
         students.put(student.getID(), student);
@@ -43,10 +43,14 @@ class Database {
     }
 
     static Course getCourse(String name) {
-        for(Course course: courses) {
+        for (Course course : courses) {
             if (course.getName().equalsIgnoreCase(name))
                 return course;
         }
         return null;
+    }
+
+    static Collection<Student> getStudents() {
+        return students.values();
     }
 }

@@ -14,14 +14,17 @@ public class Main {
                 case "" -> System.out.println("no input");
                 case "back" -> System.out.println("Enter 'exit' to exit the program.");
                 case "list" -> Database.listStudents();
+                case "notify" -> Student.notifyStudents();
                 case "statistics" -> {
                     System.out.println("Type the name of a course to see details or 'back' to quit:");
-                    Course.displayCoursesStatistics();
+                    CoursesStatistics.displayCoursesStatistics();
                     input = scanner.nextLine().trim();
                     while (!Objects.equals(input, "back")) {
 
                         if (DataVerification.checkCourseName(input)) {
                             CoursesStatistics.displayCourseStatistics(input);
+                        } else {
+                            System.out.println("Unknown course.");
                         }
 
                         input = scanner.nextLine().trim();
@@ -78,9 +81,18 @@ public class Main {
         System.out.println("Bye!");
     }
 
+
     public static void main(String[] args) {
         System.out.println(TITLE);
         getInput();
     }
 }
+
+
+
+
+
+
+
+
 
