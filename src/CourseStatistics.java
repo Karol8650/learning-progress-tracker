@@ -82,15 +82,8 @@ class CoursesStatistics {
         for (Student student : enrolledStudents) {
             int points = student.getStudentPoints().getPointsByCourse(name);
             if (points != 0) {
-                double epsilon = 0.000001d;
                 double completed = ((double) points / (double) course.getMaxPoints());
-                if (Math.abs(completed * 1000 - 0.5 - Math.floor(completed * 1000)) < epsilon) {
-                    System.out.printf("%-6s %-9d %-9s\n",
-                            student.getID(), points, decFormat.format(Math.ceil(completed * 1000) / 1000));
-                } else {
-                    System.out.printf("%-6s %-9d %-9s\n",
-                            student.getID(), points, decFormat.format(completed));
-                }
+                System.out.printf("%-6s %-9d %-9s\n", student.getID(), points, decFormat.format(completed));
             } else {
                 System.out.printf("%-6s %-9d %-9.1s\n", student.getID(), points, decFormat.format(points));
             }
